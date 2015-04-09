@@ -1,0 +1,22 @@
+web:
+  image: nginx
+  ports:
+    - "80:80"
+master:
+  build: .
+  command: locust -f /locust/scenarios.py -H http://web --master
+  ports:
+    - "8089:8089"
+    - 5557
+    - 5558
+  links:
+    - web
+slave:
+  build: .
+  command: locust -f /locust/scenarios.py -H http://web --slave --master-host=master
+  links:
+    - web
+    - master
+  ports:
+    - 5557
+    - 5558
